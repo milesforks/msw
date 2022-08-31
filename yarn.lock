@@ -1722,10 +1722,9 @@
     "@types/set-cookie-parser" "^2.4.0"
     set-cookie-parser "^2.4.6"
 
-"@mswjs/interceptors@^0.17.5":
+"@mswjs/interceptors@https://github.com/milesforks/msw-interceptors/blob/released/patched/pr-283-support-node-v18/msw-interceptors-6aaf5a14562f9deffc044aa3b2872e649612f957.tgz?raw=true":
   version "0.17.5"
-  resolved "https://registry.yarnpkg.com/@mswjs/interceptors/-/interceptors-0.17.5.tgz#38a7502e5bf8b579901adece32693b1620ea7172"
-  integrity sha512-/uZkyPUZMRExZs+DZQVnc+uoDwLfs1gFNvcRY5S3Gu78U+uhovaSEUW3tuyld1e7Oke5Qphfseb8v66V+H1zWQ==
+  resolved "https://github.com/milesforks/msw-interceptors/blob/released/patched/pr-283-support-node-v18/msw-interceptors-6aaf5a14562f9deffc044aa3b2872e649612f957.tgz?raw=true#4ec7576807641c7f6b65377029797ade5aadbdfe"
   dependencies:
     "@open-draft/until" "^1.0.3"
     "@types/debug" "^4.1.7"
