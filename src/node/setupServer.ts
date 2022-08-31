@@ -1,4 +1,5 @@
 import { ClientRequestInterceptor } from '@mswjs/interceptors/lib/interceptors/ClientRequest'
+import { FetchInterceptor } from '@mswjs/interceptors/lib/interceptors/fetch'
 import { XMLHttpRequestInterceptor } from '@mswjs/interceptors/lib/interceptors/XMLHttpRequest'
 import { createSetupServer } from './createSetupServer'
 
@@ -12,4 +13,5 @@ export const setupServer = createSetupServer(
   // so that MSW wouldn't bundle the unnecessary classes (i.e. "SocketPolyfill").
   ClientRequestInterceptor,
   XMLHttpRequestInterceptor,
+  FetchInterceptor,
 )
