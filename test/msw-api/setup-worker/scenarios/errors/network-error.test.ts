@@ -3,12 +3,12 @@ import { pageWith } from 'page-with'
 import { until } from '@open-draft/until'
 import { workerConsoleSpy } from '../../../../support/workerConsole'
 import { waitFor } from '../../../../support/waitFor'
-import { createServer, ServerApi } from '@open-draft/test-server'
+import { HttpServer } from '@open-draft/test-server/http'
 
-let httpServer: ServerApi
+let httpServer: HttpServer
 
 beforeAll(async () => {
-  httpServer = await createServer((app) => {
+  httpServer = new HttpServer((app) => {
     app.use((req, res, next) => {
       // Configure CORS to fail all requests issued from the test.
       res.setHeader('Access-Control-Allow-Origin', 'https://mswjs.io')
@@ -19,6 +19,7 @@ beforeAll(async () => {
       res.send('ok').end()
     })
   })
+  await httpServer.listen()
 })
 
 afterAll(async () => {
@@ -60,7 +61,7 @@ test('propagates an original network error', async () => {
     example: path.resolve(__dirname, 'network-error.mocks.ts'),
   })
 
-  const endpointUrl = httpServer.http.makeUrl('/resource')
+  const endpointUrl = httpServer.http.url('/resource')
   await until(() => runtime.page.evaluate((url) => fetch(url), endpointUrl))
 
   // Expect the default fetch error message.

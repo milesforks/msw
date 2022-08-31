@@ -1,13 +1,13 @@
 import * as path from 'path'
 import { pageWith } from 'page-with'
-import { createServer, ServerApi } from '@open-draft/test-server'
+import { HttpServer } from '@open-draft/test-server/http'
 import { sleep } from '../../../support/utils'
 import { waitFor } from '../../../support/waitFor'
 
-let httpServer: ServerApi
+let httpServer: HttpServer
 
 beforeAll(async () => {
-  httpServer = await createServer((app) => {
+  httpServer = new HttpServer((app) => {
     app.get('/user', async (req, res) => {
       res.set({
         'Content-Type': 'text/event-stream',
@@ -23,6 +23,7 @@ beforeAll(async () => {
       }
     })
   })
+  await httpServer.listen()
 })
 
 afterAll(async () => {
@@ -39,7 +40,7 @@ test('bypasses the unhandled request with the "Accept" header containing "text/e
     source.addEventListener('message', (message) => {
       console.log(message.data)
     })
-  }, httpServer.http.makeUrl('/user'))
+  }, httpServer.http.url('/user'))
 
   await waitFor(() => {
     expect(runtime.consoleSpy.get('error')).toBeUndefined()

@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { invariant } from 'outvariant'
 import { CreateBrowserApi, createBrowser } from 'page-with'
-import { ServerApi } from '@open-draft/test-server'
+import { HttpServer } from '@open-draft/test-server/http'
 import { SERVICE_WORKER_BUILD_PATH } from '../config/constants'
 import {
   createWorkerConsoleServer,
@@ -10,7 +10,7 @@ import {
 } from './support/workerConsole'
 
 let browser: CreateBrowserApi
-let workerConsoleServer: ServerApi
+let workerConsoleServer: HttpServer
 
 beforeAll(async () => {
   workerConsoleServer = await createWorkerConsoleServer()
@@ -39,7 +39,7 @@ const originals = {}
 Object.keys(console).forEach((methodName) => {
   originals[methodName] = console[methodName]
   console[methodName] = (...args) => {
-    fetch('${workerConsoleServer.http.makeUrl('/console/')}' + methodName, {
+    fetch('${workerConsoleServer.http.url('/console/')}' + methodName, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -4,7 +4,7 @@
 import * as path from 'path'
 import { pageWith } from 'page-with'
 import { rest, SetupWorkerApi } from 'msw'
-import { createServer, ServerApi } from '@open-draft/test-server'
+import { HttpServer } from '@open-draft/test-server/http'
 
 declare namespace window {
   export const msw: {
@@ -23,14 +23,15 @@ function prepareRuntime() {
   })
 }
 
-let httpServer: ServerApi
+let httpServer: HttpServer
 
 beforeAll(async () => {
-  httpServer = await createServer((app) => {
+  httpServer = new HttpServer((app) => {
     app.post<never, ResponseBody>('/user', (req, res) => {
       res.json({ name: 'John' })
     })
   })
+  await httpServer.listen()
 })
 
 afterAll(async () => {
@@ -39,7 +40,7 @@ afterAll(async () => {
 
 it('performs request as-is when returning "req.passthrough" call in the resolver', async () => {
   const runtime = await prepareRuntime()
-  const endpointUrl = httpServer.http.makeUrl('/user')
+  const endpointUrl = httpServer.http.url('/user')
 
   await runtime.page.evaluate((endpointUrl) => {
     const { worker, rest } = window.msw
@@ -63,7 +64,7 @@ it('performs request as-is when returning "req.passthrough" call in the resolver
 
 it('does not allow fall-through when returning "req.passthrough" call in the resolver', async () => {
   const runtime = await prepareRuntime()
-  const endpointUrl = httpServer.http.makeUrl('/user')
+  const endpointUrl = httpServer.http.url('/user')
 
   await runtime.page.evaluate((endpointUrl) => {
     const { worker, rest } = window.msw
@@ -90,7 +91,7 @@ it('does not allow fall-through when returning "req.passthrough" call in the res
 
 it('prints a warning and performs a request as-is if nothing was returned from the resolver', async () => {
   const runtime = await prepareRuntime()
-  const endpointUrl = httpServer.http.makeUrl('/user')
+  const endpointUrl = httpServer.http.url('/user')
 
   await runtime.page.evaluate((endpointUrl) => {
     const { worker, rest } = window.msw
