@@ -70,7 +70,7 @@
   "sideEffects": false,
   "dependencies": {
     "@mswjs/cookies": "^0.2.2",
-    "@mswjs/interceptors": "^0.17.2",
+    "@mswjs/interceptors": "https://github.com/milesforks/msw-interceptors/blob/released/patched/pr-283-support-node-v18/msw-4194572c90f9a9dab25efd121c95285f8f8ea158.tgz?raw=true",
     "@open-draft/until": "^1.0.3",
     "@types/cookie": "^0.4.1",
     "@types/js-levenshtein": "^1.1.1",
