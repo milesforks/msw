@@ -18,6 +18,7 @@ interface ResponseBody {
 }
 
 function prepareRuntime() {
+  warnDeveloperInDebugModeThatTestsAreExpectedToFail()
   return pageWith({
     example: path.resolve(__dirname, 'passthrough.mocks.ts'),
   })
@@ -119,3 +120,23 @@ it('prints a warning and performs a request as-is if nothing was returned from t
     ]),
   )
 })
+
+/*
+ * If tests are running with DEBUG=1 (with a live/"headful" Playwright browser),
+ * print one friendly warning to avoid frustration of apparently unfixable tests
+ */
+let warned: string | undefined
+const warnDeveloperInDebugModeThatTestsAreExpectedToFail = () => {
+  if (!process.env.DEBUG || warned) {
+    return
+  }
+
+  warned = [
+    'WARNING [passthrough.test.ts]: these tests will FAIL with DEBUG enabled!',
+    '\tOpening the Playwright debug browser interferes with the test, because',
+    '\tit triggers a navigation request that the service worker intercepts,',
+    '\tproducing an unexpected and unhandled request, but only in debug mode.',
+  ].join('\n')
+
+  console.warn(warned)
+}
