@@ -39,16 +39,39 @@ export function coercePath(path: string): string {
         },
       )
       /**
-       * Escape the port so that "path-to-regexp" can match
-       * absolute URLs including port numbers.
-       */
-      .replace(/([^\/])(:)(?=\d+)/, '$1\\$2')
-      /**
-       * Escape the protocol so that "path-to-regexp" could match
-       * absolute URL.
+       * Escape any `:` character in the SCHEME, PORT, and HOST (if bracketed IPv6)
+       * This allows `path-to-regexp` to match absolute URL including port numbers.
        * @see https://github.com/pillarjs/path-to-regexp/issues/259
+       *
+       * Example bracketed IPv6 replacement (any `:` in HOST is escaped):
+       * ```
+       * http://[::1]:3000/:aaa/:bbb
+       * http\://[\:\:1]\:3000/:aaa/:bbb
+       *```
+       *
+       * Example non-bracketed replacement (any `:` in HOST is _not_ escaped)
+       * ```
+       * http://:subdomain.example.com:3000/:aaa/:bbb
+       * http\://:subdomain.example.com\:3000/:aaa/:bbb
+       * ```
+       *
+       * Scheme, port, and path are optional, but address is always expected
+       * to exist (e.g. `http://` is invalid, but `http://:foobar` is OK)
        */
-      .replace(/^([^\/]+)(:)(?=\/\/)/, '$1\\$2')
+      .replace(
+        /(?<scheme>^(?:\/\/|(?:[^\/\s]+)(?::)(?=\/\/)\/\/))?(?<addr>(?<bracketed>\[(?<ip6addr>[0-9a-f:]+?)\])|(?<unbracketed>[^\/\[\]\s]+)(?<!:[0-9]{1,5}))(?=\/|\:[0-9]{1,5}|$)(?<port>:[0-9]{1,5})?(?<path>\/$|(?:\/[^\/\s]+)+?$)?$/,
+        (_substring, ...args) => {
+          const namedGroups = args.slice(-1)[0]
+          const { bracketed, path, port, scheme, unbracketed } = namedGroups
+
+          return [
+            scheme?.replace(/:/, '\\:') ?? '',
+            bracketed?.replace(/:/g, '\\:') ?? unbracketed,
+            port?.replace(/^:/, '\\:') ?? '',
+            path ?? '',
+          ].join('')
+        },
+      )
   )
 }
 
