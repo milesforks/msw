@@ -14,7 +14,9 @@ test('mocks a response to an XMLHttpRequest', async () => {
     req.send()
   }, REQUEST_URL)
 
-  const res = await runtime.page.waitForResponse(REQUEST_URL)
+  const res = await runtime.page.waitForResponse(
+    (res) => res.url() === REQUEST_URL,
+  )
   const body = await res.json()
 
   expect(res.status()).toBe(200)
