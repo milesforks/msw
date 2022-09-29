@@ -85,7 +85,7 @@
   "sideEffects": false,
   "dependencies": {
     "@mswjs/cookies": "^0.2.2",
-    "@mswjs/interceptors": "https://github.com/milesforks/msw-interceptors/blob/released/patched/pr-283-support-node-v18/msw-interceptors-6aaf5a14562f9deffc044aa3b2872e649612f957.tgz?raw=true",
+    "@mswjs/interceptors": "https://github.com/milesforks/msw-interceptors/blob/released/patched/without-instanceof/msw-interceptors-5fed2cb9b4cecdb519431e11547f83944a05b5a5.tgz?raw=true",
     "@open-draft/until": "^1.0.3",
     "@types/cookie": "^0.4.1",
     "@types/js-levenshtein": "^1.1.1",
