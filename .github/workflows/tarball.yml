@@ -1,0 +1,38 @@
+name: ci
+on:
+  push:
+    branches: [patched/*]
+jobs:
+  release-tarball:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Pack tarball
+        run: yarn pack --prod --frozen-lockfile --verbose --filename "unreleased-msw-$GITHUB_SHA.tgz"
+
+      - name: Setup Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Switch branch and commit tarball
+        run: |
+          git add "unreleased-msw-$GITHUB_SHA.tgz"
+          git commit -m "chore(auto tarballer): add tarball for $GITHUB_REF_NAME"
+          git push origin +HEAD:"released/$GITHUB_REF_NAME"
