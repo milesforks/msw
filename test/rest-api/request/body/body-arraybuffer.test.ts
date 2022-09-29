@@ -32,7 +32,9 @@ test('reads buffer request body as array buffer', async () => {
       body: new TextEncoder().encode(JSON.stringify({ firstName: 'John' })),
     })
   })
-  const res = await runtime.page.waitForResponse(runtime.makeUrl('/json'))
+  const res = await runtime.page.waitForResponse(
+    (res) => res.url() === runtime.makeUrl('/json'),
+  )
   const body = await res.body()
 
   expect(res.status()).toBe(200)

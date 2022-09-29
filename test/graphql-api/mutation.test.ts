@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { createServer, ServerApi } from '@open-draft/test-server'
+import { HttpServer } from '@open-draft/test-server/http'
 import { pageWith } from 'page-with'
 import { executeGraphQLQuery } from './utils/executeGraphQLQuery'
 import { gql } from '../support/graphql'
@@ -10,16 +10,17 @@ function prepareRuntime() {
   })
 }
 
-let server: ServerApi
+let server: HttpServer
 
 function getEndpoint(): string {
-  return server.http.makeUrl('/graphql')
+  return server.http.url('/graphql')
 }
 
 beforeAll(async () => {
-  server = await createServer((app) => {
+  server = new HttpServer((app) => {
     app.use('*', (req, res) => res.status(405).end())
   })
+  await server.listen()
 })
 
 afterAll(async () => {

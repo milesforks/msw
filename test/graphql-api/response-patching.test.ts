@@ -1,8 +1,7 @@
 import * as path from 'path'
 import { pageWith } from 'page-with'
-import type { ExecutionResult } from 'graphql'
-import { buildSchema, graphql } from 'graphql'
-import { ServerApi, createServer } from '@open-draft/test-server'
+import { ExecutionResult, buildSchema, graphql } from 'graphql'
+import { HttpServer } from '@open-draft/test-server/http'
 import { SetupWorkerApi } from 'msw'
 import { gql } from '../support/graphql'
 
@@ -13,13 +12,13 @@ declare namespace window {
   }
 }
 
-let httpServer: ServerApi
+let httpServer: HttpServer
 
 beforeAll(async () => {
   // This test server simulates a production GraphQL server
   // and uses a hard-coded `rootValue` to resolve queries
   // against the schema.
-  httpServer = await createServer((app) => {
+  httpServer = new HttpServer((app) => {
     app.post('/graphql', async (req, res) => {
       const result = await graphql({
         schema: buildSchema(gql`
@@ -44,6 +43,7 @@ beforeAll(async () => {
       return res.status(200).json(result)
     })
   })
+  await httpServer.listen()
 })
 
 afterAll(async () => {
@@ -58,7 +58,7 @@ function createRuntime() {
 
 test('patches a GraphQL response', async () => {
   const runtime = await createRuntime()
-  const endpointUrl = httpServer.http.makeUrl('/graphql')
+  const endpointUrl = httpServer.http.url('/graphql')
 
   await runtime.page.evaluate(() => {
     return window.msw.registration

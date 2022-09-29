@@ -14,7 +14,7 @@ test('supports redirect in a mocked response', async () => {
   expect(res.status()).toBe(307)
 
   const redirectRes = await runtime.page.waitForResponse(
-    runtime.makeUrl('/user'),
+    (res) => res.url() === runtime.makeUrl('/user'),
   )
   const redirectStatus = redirectRes.status()
   const redirectHeaders = await redirectRes.allHeaders()

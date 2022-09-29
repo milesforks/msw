@@ -46,7 +46,9 @@ test('reads buffer request body as text', async () => {
       body: new TextEncoder().encode('hello-world'),
     })
   })
-  const res = await runtime.page.waitForResponse(runtime.makeUrl('/text'))
+  const res = await runtime.page.waitForResponse(
+    (res) => res.url() === runtime.makeUrl('/text'),
+  )
   const body = await res.text()
 
   expect(res.status()).toBe(200)

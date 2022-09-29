@@ -96,7 +96,8 @@ test('forwards custom request headers to the original request', async () => {
     },
   })
 
-  const req = await runtime.page.waitForRequest(runtime.makeUrl('/headers'))
+  const reqUrl = runtime.makeUrl('/headers')
+  const req = await runtime.page.waitForRequest((req) => req.url() === reqUrl)
   const res = await requestPromise
 
   expect(req.headers()).toHaveProperty('authorization', 'token')

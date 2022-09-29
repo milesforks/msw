@@ -1,8 +1,8 @@
 import { ConsoleMessageType } from 'page-with/lib/utils/spyOnConsole'
-import { ServerApi, createServer } from '@open-draft/test-server'
+import { HttpServer } from '@open-draft/test-server/http'
 import { format } from 'outvariant'
 
-let workerConsoleServer: ServerApi
+let workerConsoleServer: HttpServer
 export const workerConsoleSpy = new Map<ConsoleMessageType, string[]>()
 export const workerConsoleIdle = Promise.resolve()
 
@@ -22,7 +22,7 @@ const consoleMessageTypeOverrides = {
  * @see https://stackoverflow.com/questions/54339039/puppeteer-can-not-listen-service-workers-console
  */
 export async function createWorkerConsoleServer() {
-  workerConsoleServer = await createServer((app) => {
+  workerConsoleServer = new HttpServer((app) => {
     app.use((req, res, next) => {
       // Configure CORS so that localhost can issue cross-port requests
       // during the test runs.
@@ -47,6 +47,6 @@ export async function createWorkerConsoleServer() {
       return res.status(200).end()
     })
   })
-
+  await workerConsoleServer.listen()
   return workerConsoleServer
 }
